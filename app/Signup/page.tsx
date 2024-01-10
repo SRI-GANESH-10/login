@@ -140,7 +140,7 @@ export default function Home() {
         minWidth: "100%",
       }}
     >
-      <div className="absolute top-[0%] left-[70%] right-0 bg-white flex items-center justify-center pl-8 pr-8 pt-12 pb-24 border-l-2 border-slate-300 shadow-left">
+      <div className="absolute top-[0%] left-[70%] right-0 bg-white flex items-center justify-center pl-8 pr-8 pt- pb-24 border-l-2 border-slate-300 shadow-left">
         <div className="flex flex-col w-full">
           <div className="flex items-center flex-col">
             <LockIcon
