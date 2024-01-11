@@ -18,7 +18,7 @@ const Products = () => {
   const handleLogout = () => {
     deleteCookie();
     router.push("/Login");
-  };
+  }; 
 
   return (
     <div className="mt-24 text-center">
