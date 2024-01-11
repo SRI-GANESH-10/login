@@ -13,7 +13,6 @@ interface UserProfileData {
   lastName: string;
   email: string;
   status: string;
-  // Add more properties based on your actual API response
 }
 
 const UserProfile = () => {
@@ -26,7 +25,6 @@ const UserProfile = () => {
         const token = getToken();
 
         if (!token) {
-          // Redirect to login page if token is not available
           router.push("/Login");
           return;
         }
@@ -53,7 +51,6 @@ const UserProfile = () => {
   }, [router]);
 
   const handleLogout = () => {
-    // Delete the cookie and redirect to the login page
     deleteCookie();
     router.push("/Login");
   };

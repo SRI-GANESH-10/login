@@ -19,7 +19,7 @@ interface FormData {
 
 export default function Home() {
   const [showPassword, setShowPassword] = useState(false);
-  const [formErrors, setFormErrors] = useState<Partial<FormData>>({});
+  const [formErrors, setFormErrors] = useState<Partial<FormData>>({});  //!partial form of formdata
 
   const [formData, setFormData] = useState<FormData>({
     firstName: "",
@@ -40,6 +40,7 @@ export default function Home() {
     >
   ) => {
     const { name, value, type } = e.target;
+    //! Only for checkbox
 
     if (type === "checkbox") {
       const checkboxValue = (e.target as HTMLInputElement).checked;
@@ -47,6 +48,8 @@ export default function Home() {
         ...prevData,
         [name]: checkboxValue,
       }));
+      //! For remaining data
+
     } else {
       setFormData((prevData) => ({
         ...prevData,
@@ -111,7 +114,6 @@ export default function Home() {
           },
         }
       );
-      console.log("hi this is the response", response);
 
       if (response.status === 201 || response.status === 200) {
         //! If registration is successful, you can redirect or perform any other actions

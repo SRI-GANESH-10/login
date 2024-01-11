@@ -20,7 +20,6 @@ export default function Landing() {
     deleteCookie();
     router.push("/Login");
   };
-  console.log("Hi");
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <h1 className="text-4xl font-bold mb-8">This is Landing Page</h1>

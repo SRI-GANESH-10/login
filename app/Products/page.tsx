@@ -1,12 +1,12 @@
 "use client";
-import React from "react";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { getToken, deleteCookie } from "../comp/cookie";
 import Link from "next/link";
 
-export default function Products() {
+const Products = () => {
   const router = useRouter();
+
   useEffect(() => {
     const token = getToken();
 
@@ -16,18 +16,23 @@ export default function Products() {
   }, [router]);
 
   const handleLogout = () => {
-    // Delete the cookie and redirect to the login page
     deleteCookie();
     router.push("/Login");
   };
-  console.log("Hi");
-  return (
-    <div>
-      <h1>This is Logout Page</h1>
 
-      <Link href={"/Login"} onClick={handleLogout}>
+  return (
+    <div className="mt-24 text-center">
+      <h1 className="text-3xl font-bold mb-6">Welcome to the Products Page</h1>
+      <p className="text-gray-600 mb-8">Explore our amazing products!</p>
+      <Link
+        href={"/Login"}
+        onClick={handleLogout}
+        className="text-blue-500 underline cursor-pointer"
+      >
         Logout
       </Link>
     </div>
   );
-}
+};
+
+export default Products;

@@ -17,14 +17,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(false);
 
-  console.log("Start");
   const router = useRouter();
-  interface UserData {
-    id: string;
-    email: string;
-    password: string;
-  }
-
   const handleTogglePassword = useCallback(() => {
     setShowPassword((prev) => !prev);
   }, []);
