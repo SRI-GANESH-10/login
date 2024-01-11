@@ -14,6 +14,8 @@ export const printStoredTokens = () => {
 
   if (authData) {
     const { token, refreshToken } = authData;
+    console.log('Stored Token:', token);
+    console.log('Stored Refresh Token:', refreshToken);
   } else {
     console.log('No stored tokens found.');
   }
@@ -22,6 +24,7 @@ export const printStoredTokens = () => {
 //delete the cookie
 export const deleteCookie = () => {
   destroyCookie(null, 'authData', { path: '/' });
+  console.log('Cookie deleted.');
 };
 
 //retrieve the stored token
