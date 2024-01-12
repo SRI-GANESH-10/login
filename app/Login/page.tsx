@@ -62,8 +62,7 @@ export default function Login() {
           setLoginError(true);
         }
       } catch (error) {
-        console.error("Login error:", error);
-        setLoginError(true);
+         setLoginError(true);
       }
     },
     [email, password, router]
