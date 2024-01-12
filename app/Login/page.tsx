@@ -159,7 +159,7 @@ export default function Login() {
               className="mt-4 bg-blue-500 text-white p-2 rounded-md w-full"
             >
               Sign In
-            </button>
+            </button> 
             <div className="flex items-center ml-32 mt-4">
               <h2>New User? </h2>
               <Link href="/Signup" className="text-orange-500 ml-1">
