@@ -11,6 +11,7 @@ import { useCallback } from "react";
 import { storeTokensInCookie } from '../comp/cookie';
 
 
+
 export default function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -57,7 +58,7 @@ export default function Login() {
 
         if (user && user.result.email === email) {
           console.log("User info:", user);
-          router.push("/Landing");
+          router.push("/Products");
         } else {
           setLoginError(true);
         }
