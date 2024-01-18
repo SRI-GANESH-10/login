@@ -7,42 +7,9 @@ import Image from "next/image";
 import Link from "next/link";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
-type Notification = {
-  _id: string;
-  category: string;
-  updatedAt: string;
-  message: string;
-  [key: string]: any; // Add an index signature to allow any other properties
-
-  // Add other properties as needed
-};
-
 type DrawerProps = {
   isOpen: boolean;
   onClose: () => void;
-};
-
-const groupNotificationsByDate = (
-  notifications: Notification[],
-  dateKey: string
-) => {
-  const groupedNotifications: Record<
-    string,
-    { date: string; notifications: Notification[] }
-  > = notifications.reduce((groups, notification) => {
-    const date = new Date(notification[dateKey]).toLocaleDateString();
-    if (!groups[date]) {
-      groups[date] = { date, notifications: [] };
-    }
-    groups[date].notifications.push(notification);
-    return groups;
-  }, {} as Record<string, { date: string; notifications: Notification[] }>);
-
-  const sortedGroups = Object.values(groupedNotifications).sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-  );
-
-  return sortedGroups;
 };
 
 const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
@@ -65,7 +32,27 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
           }
         );
 
-        setData(response.data.notifications); // Assuming the notifications are under the "notifications" key
+        const transformedData = response.data.notifications.map(
+          (notification: any) => ({
+            _id: notification._id,
+            message: notification.message,
+            category: notification.category,
+            createdAt: new Date(notification.createdAt).toLocaleDateString(
+              "en-US",
+              {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+                timeZone: "UTC",
+              }
+            ),
+          })
+        );
+        setData(transformedData);
+        console.log(transformedData); // Assuming the notifications are under the "notifications" key
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -78,6 +65,22 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
+  };
+
+  const getIconSrc = (category: string): string => {
+    switch (category) {
+      case "Project":
+        return "/requirediconsforsidebarandheadercomponent/clipboardIcon.svg";
+      case "Issue":
+        return "/requirediconsforsidebarandheadercomponent/issuesIcon.svg";
+      case "Task":
+        return "/requirediconsforsidebarandheadercomponent/fileTextIcon.svg";
+      case "Capture":
+        return "/requirediconsforsidebarandheadercomponent/cameraIcon.svg";
+      // Add more cases for other categories if needed
+      default:
+        return "";
+    }
   };
 
   return (
@@ -195,26 +198,26 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
               {/* //! -------------------------------- ALL -------------------------------------------- */}
               {activeButton === "All" && (
                 <div className="p-2 bg-slate-200 h-full w-full">
-                  {groupNotificationsByDate(data, "updatedAt").map((group) => (
-                    <div key={group.date} className="mb-4">
-                      <h2>{group.date}</h2>
-                      {group.notifications.map((notification) => (
-                        <div
-                          key={notification._id}
-                          className="mb-8 border border-b-black p-2 flex flex-row mt-2"
-                        >
-                          <div className="p-2">
-                            <Image
-                              src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
-                              alt=""
-                              width={32}
-                              height={20}
-                              className="mt-0.5"
-                            />
-                          </div>
-                          <p>{notification.message}</p>
-                        </div>
-                      ))}
+                  {data.map((notification) => (
+                    <div
+                      key={notification._id}
+                      className="mb-8 border border-b-black p-2 flex flex-row mt-2"
+                    >
+                      <div className="p-2">
+                        {notification.category && (
+                          <Image
+                            src={getIconSrc(notification.category)}
+                            alt=""
+                            width={32}
+                            height={20}
+                            className="mt-0.5"
+                          />
+                        )}
+                      </div>
+                      <div className="flex flex-col ">
+                        <p className="font-semibold">{notification.message}</p>
+                        <p className="font-thin">{notification.createdAt}</p>
+                      </div>
                     </div>
                   ))}
                   {/* Display message when no notifications are found */}
@@ -230,36 +233,35 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
 
               {activeButton === "Project" && (
                 <div className="p-2 bg-slate-200 h-full w-full">
-                  {groupNotificationsByDate(
-                    data.filter(
-                      (notification) => notification.category === "Project"
-                    ),
-                    "updatedAt"
-                  ).map((group) => (
-                    <div key={group.date} className="mb-4">
-                      <h2>{group.date}</h2>
-                      {group.notifications.map((notification) => (
-                        <div
-                          key={notification._id}
-                          className="mb-8 border border-b-black p-2 flex flex-row mt-2"
-                        >
-                          <div className="p-2">
-                            <Image
-                              src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
-                              alt=""
-                              width={32}
-                              height={20}
-                              className="mt-0.5"
-                            />
-                          </div>
-                          <p>{notification.message}</p>
+                  {data
+                    .filter(
+                      (notification: any) => notification.category === "Project"
+                    )
+                    .map((notification: any) => (
+                      <div
+                        key={notification._id}
+                        className="mb-8 border border-b-black p-2 flex flex-row mt-2"
+                      >
+                        <div className="p-2">
+                          <Image
+                            src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
+                            alt=""
+                            width={32}
+                            height={20}
+                            className="mt-0.5"
+                          />
                         </div>
-                      ))}
-                    </div>
-                  ))}
+                        <div className="flex flex-col ">
+                          <p className="font-semibold">
+                            {notification.message}
+                          </p>
+                          <p className="font-thin">{notification.createdAt}</p>
+                        </div>
+                      </div>
+                    ))}
                   {/* Display message when no notifications are found */}
                   {data.filter(
-                    (notification) => notification.category === "Project"
+                    (notification: any) => notification.category === "Project"
                   ).length === 0 && (
                     <div className="text-center text-gray-500">
                       Nothing to show
@@ -272,38 +274,32 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
 
               {activeButton === "Issue" && (
                 <div className="p-2 bg-slate-200 h-full w-full">
-                  {groupNotificationsByDate(
-                    data.filter(
-                      (notification) => notification.category === "Issue"
-                    ),
-                    "updatedAt"
-                  ).map((group) => (
-                    <div key={group.date} className="mb-4">
-                      <h2>{group.date}</h2>
-                      {group.notifications.map((notification) => (
-                        <div
-                          key={notification._id}
-                          className="mb-8 border border-b-black p-2 flex flex-row justify-between mt-2"
-                        >
-                          <div className="p-2">
-                            <Image
-                              src="/requirediconsforsidebarandheadercomponent/issueIcon.svg"
-                              alt=""
-                              width={22}
-                              height={20}
-                              className="mt-0.5"
-                            />
-                          </div>
-                          <p>{notification.message}</p>
+                  {data
+                    .filter(
+                      (notification: any) => notification.category === "Issue"
+                    )
+                    .map((notification: any) => (
+                      <div
+                        key={notification._id}
+                        className="mb-8 border border-b-black p-2 flex flex-row mt-2"
+                      >
+                        <div className="p-2">
+                          <Image
+                            src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
+                            alt=""
+                            width={32}
+                            height={20}
+                            className="mt-0.5"
+                          />
                         </div>
-                      ))}
-                    </div>
-                  ))}
+                        <p>{notification.message}</p>
+                      </div>
+                    ))}
                   {/* Display message when no notifications are found */}
                   {data.filter(
-                    (notification) => notification.category === "Issue"
+                    (notification: any) => notification.category === "Issue"
                   ).length === 0 && (
-                    <div className="text-center text-red-500">
+                    <div className="text-center text-gray-500">
                       Nothing to show
                     </div>
                   )}
@@ -314,80 +310,67 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
 
               {activeButton === "Task" && (
                 <div className="p-2 bg-slate-200 h-full w-full">
-                  {groupNotificationsByDate(
-                    data.filter(
-                      (notification) => notification.category === "Task"
-                    ),
-                    "updatedAt"
-                  ).map((group) => (
-                    <div key={group.date} className="mb-4">
-                      <h2>{group.date}</h2>
-                      {group.notifications.map((notification) => (
-                        <div
-                          key={notification._id}
-                          className="mb-8 border border-b-black p-2 flex flex-row justify-between mt-2"
-                        >
-                          <div className="p-2">
-                            <Image
-                              src="/requirediconsforsidebarandheadercomponent/todoIcon.svg"
-                              alt=""
-                              width={22}
-                              height={20}
-                              className="mt-0.5"
-                            />
-                          </div>
-                          <p>{notification.message}</p>
+                  {data
+                    .filter(
+                      (notification: any) => notification.category === "Task"
+                    )
+                    .map((notification: any) => (
+                      <div
+                        key={notification._id}
+                        className="mb-8 border border-b-black p-2 flex flex-row mt-2"
+                      >
+                        <div className="p-2">
+                          <Image
+                            src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
+                            alt=""
+                            width={32}
+                            height={20}
+                            className="mt-0.5"
+                          />
                         </div>
-                      ))}
-                    </div>
-                  ))}
+                        <p>{notification.message}</p>
+                      </div>
+                    ))}
                   {/* Display message when no notifications are found */}
                   {data.filter(
-                    (notification) => notification.category === "Task"
+                    (notification: any) => notification.category === "Task"
                   ).length === 0 && (
-                    <div className="text-center text-orange-500">
+                    <div className="text-center text-gray-500">
                       Nothing to show
                     </div>
                   )}
                 </div>
               )}
-
               {/* //! --------------------------- CAPTURE --------------------------------- */}
 
               {activeButton === "Capture" && (
                 <div className="p-2 bg-slate-200 h-full w-full">
-                  {groupNotificationsByDate(
-                    data.filter(
-                      (notification) => notification.category === "Capture"
-                    ),
-                    "updatedAt"
-                  ).map((group) => (
-                    <div key={group.date} className="mb-4">
-                      <h2>{group.date}</h2>
-                      {group.notifications.map((notification) => (
-                        <div
-                          key={notification._id}
-                          className="mb-8 border border-b-black p-2 flex flex-row justify-between mt-2"
-                        >
-                          <div className="p-2">
-                            <Image
-                              src="/requirediconsforsidebarandheadercomponent/cameraIcon.svg"
-                              alt=""
-                              width={22}
-                              height={20}
-                              className="mt-0.5"
-                            />
-                          </div>
-                          <p>{notification.message}</p>
+                  {data
+                    .filter(
+                      (notification: any) => notification.category === "Capture"
+                    )
+                    .map((notification: any) => (
+                      <div
+                        key={notification._id}
+                        className="mb-8 border border-b-black p-2 flex flex-row mt-2"
+                      >
+                        <div className="p-2">
+                          <Image
+                            src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
+                            alt=""
+                            width={32}
+                            height={20}
+                            className="mt-0.5"
+                          />
                         </div>
-                      ))}
-                    </div>
-                  ))}
+                        <p>{notification.message}</p>
+                      </div>
+                    ))}
                   {/* Display message when no notifications are found */}
                   {data.filter(
-                    (notification) => notification.category === "Capture"
+                    (notification: any) => notification.category === "Capture"
                   ).length === 0 && (
-                    <div className="text-center text-blue-500">
+                    <div className="text-center text-gray-500">
                       Nothing to show
                     </div>
                   )}
