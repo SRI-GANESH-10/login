@@ -19,7 +19,7 @@ export default function LandingLayout({
             <Sidebar />
           </div>
 
-          <div className="flex-1 p-4">
+          <div className="flex-1 mt-5">
             <Suspense fallback={<Loading />}>{children}</Suspense>
           </div>
         </div>

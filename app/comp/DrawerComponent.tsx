@@ -6,7 +6,7 @@ import Drawer from "@mui/material/Drawer";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { getToken, deleteCookie } from "../comp/cookie";
+import { getToken } from "../comp/cookie";
 
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
@@ -18,7 +18,7 @@ type DrawerProps = {
 const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const [data, setData] = useState<any[]>([]);
-  const [visibleMessages, setVisibleMessages] = useState<number>(5); // Initial number of messages to display
+  const [visibleMessages, setVisibleMessages] = useState<number>(5);        //TODO Initial number of messages to display
   const [transformedData, setTransformedData] = useState<any[]>([]);
   const router = useRouter()
 
@@ -47,11 +47,12 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
             _id: notification._id,
             message: notification.message,
             category: notification.category,
-            createdAt: new Date(notification.createdAt).toLocaleDateString(
-              "en-US",
+            createdAt: new Date(notification.createdAt).toLocaleDateString(                //TODO Date converts to Date time format
+                                                                                           //* LocalDateString converts to string based on local
+              "en-US",                                                                     //? In English
               {
                 year: "numeric",
-                month: "2-digit",
+                month: "2-digit",                                                         //? Atleast Two digits
                 day: "2-digit",
                 hour: "2-digit",
                 minute: "2-digit",
@@ -62,7 +63,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
           })
         );
         setTransformedData(transformedData);
-        const limitedData = transformedData.slice(0, visibleMessages);
+        const limitedData = transformedData.slice(0, visibleMessages);              //TODO Starting and the visibleMessages not including it
         setData(limitedData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -112,7 +113,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
         },
       }}
     >
-      <Box sx={{ width: 446, height: 583.3 }}>
+      <Box sx={{ width: 446}}>
         <div className="flex justify-between border-b-2 sticky top-0 bg-white z-10">
           <span className="p-2">Notifications</span>
           <button className="p-2" onClick={onClose}>
@@ -120,7 +121,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        <div className="flex justify-between mt-2 px-2 sticky top-11 bg-white flex-shrink-0">
+        <div className="flex justify-between px-2 pt-2 pb-1 sticky top-11 bg-white">
           <button
             onClick={() => handleButtonClick("All")}
             className={`flex ${
@@ -210,7 +211,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
 
         <div>
           <Link href={`/${activeButton}`} passHref>
-            <div onClick = {(e)=>e.preventDefault()} className="mt-2">
+            <div onClick = {(e)=>e.preventDefault()}>
               {/* //! -------------------------------- ALL -------------------------------------------- */}
               {activeButton === "All" && (
                 <div className="p-2 bg-slate-200 h-full w-full flex-1">
