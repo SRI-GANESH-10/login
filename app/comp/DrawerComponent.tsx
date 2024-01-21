@@ -5,6 +5,9 @@ import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { getToken, deleteCookie } from "../comp/cookie";
+
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 
 type DrawerProps = {
@@ -15,19 +18,26 @@ type DrawerProps = {
 const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const [data, setData] = useState<any[]>([]);
+  const [visibleMessages, setVisibleMessages] = useState<number>(5); // Initial number of messages to display
+  const [transformedData, setTransformedData] = useState<any[]>([]);
+  const router = useRouter()
+
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        // Include your authorization logic here
-        const accessToken =
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGF0dXMiOiJhY3RpdmUiLCJsb2dpblR5cGUiOiJjb25zdHJ1Y3RuLW9hdXRoIiwicmVzZXRQYXNzd29yZFRpbWVzdGFtcHMiOltdLCJfaWQiOiJVU1I3NDQ4MzYiLCJmaXJzdE5hbWUiOiJWaW5lZXRoIiwibGFzdE5hbWUiOiJjb25zdHJ1Y3ROIiwiZW1haWwiOiJ2aW5lZXRoQGNvbnN0cnVjdG4uYWkiLCJjb250YWN0Ijp7ImNvZGUiOiI1MDAwNDkiLCJudW1iZXIiOjEyMzQ1Njc4OTB9LCJkb2IiOiIyMDI2LTEwLTIyVDAwOjAwOjAwLjAwMFoiLCJ2ZXJpZmllZCI6dHJ1ZSwiY3JlYXRlZEF0IjoiMjAyMy0wMS0yNFQwNzoxOTowNC44MzZaIiwidXBkYXRlZEF0IjoiMjAyNC0wMS0xOFQwOTowNjozOS4zNzJaIiwiX192IjoxLCJpc1N1cHBvcnRVc2VyIjpmYWxzZSwidmVyaWZpY2F0aW9uVGltZXN0YW1wcyI6WyIyMDIzLTA0LTA1VDA3OjA4OjQyLjEwMFoiXSwiZnVsbE5hbWUiOiJWaW5lZXRoIGNvbnN0cnVjdE4iLCJhZ2UiOi0zLCJjYW5SZXNlbmRWZXJpZmljYXRpb24iOnRydWUsImNhblJlc2V0UGFzc3dvcmQiOnRydWUsInByb3ZpZGVyIjoicGFzc3dvcmQiLCJpYXQiOjE3MDU1NzA5ODgsImV4cCI6MTcwNTY1Mzc4OH0.sqZtUnbHIF8NSgoSBZOhSDsr9CZkCF8rYN6nSb0vwvA"; // Replace with your actual access token
 
+      const token = getToken();
+
+      if (!token) {
+        router.push("/Login");
+      }
+      try {
+        
         const response = await axios.get(
           "https://api.dev2.constructn.ai/api/v1/user-notifications",
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -51,8 +61,9 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
             ),
           })
         );
-        setData(transformedData);
-        console.log(transformedData); // Assuming the notifications are under the "notifications" key
+        setTransformedData(transformedData);
+        const limitedData = transformedData.slice(0, visibleMessages);
+        setData(limitedData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -61,7 +72,13 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
     if (activeButton) {
       fetchData();
     }
-  }, [activeButton]);
+  }, [activeButton, visibleMessages , router]);
+
+  const handleLoadMore = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    setVisibleMessages((prevVisibleMessages) => prevVisibleMessages + 5);
+  };
+  
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
@@ -77,7 +94,6 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
         return "/requirediconsforsidebarandheadercomponent/fileTextIcon.svg";
       case "Capture":
         return "/requirediconsforsidebarandheadercomponent/cameraIcon.svg";
-      // Add more cases for other categories if needed
       default:
         return "";
     }
@@ -91,136 +107,148 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
       sx={{
         ".MuiDrawer-paper": {
           top: "60px",
-          bottom: 0,
+
           height: "calc(100vh - 60px)",
         },
       }}
     >
-      <Box sx={{ width: 436, height: 583.3 }}>
+      <Box sx={{ width: 446, height: 583.3 }}>
+        <div className="flex justify-between border-b-2 sticky top-0 bg-white z-10">
+          <span className="p-2">Notifications</span>
+          <button className="p-2" onClick={onClose}>
+            <HighlightOffIcon />
+          </button>
+        </div>
+
+        <div className="flex justify-between mt-2 px-2 sticky top-11 bg-white flex-shrink-0">
+          <button
+            onClick={() => handleButtonClick("All")}
+            className={`flex ${
+              activeButton === "All"
+                ? "text-orange-400 border-b-2 border-orange-400"
+                : ""
+            } p-0.5`}
+          >
+            <Image
+              src="/requirediconsforsidebarandheadercomponent/todoIcon.svg"
+              alt=""
+              width={22}
+              height={20}
+            />
+            <div className="ml-1">All</div>
+          </button>
+
+          <button
+            onClick={() => handleButtonClick("Project")}
+            className={`flex ${
+              activeButton === "Project"
+                ? "text-orange-400 border-b-2 border-orange-400"
+                : ""
+            }`}
+          >
+            <Image
+              src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
+              alt=""
+              width={22}
+              height={20}
+              className="mt-0.5"
+            />{" "}
+            <div className="ml-1">Project</div>
+          </button>
+
+          <button
+            onClick={() => handleButtonClick("Issue")}
+            className={`flex ${
+              activeButton === "Issue"
+                ? "text-orange-400 border-b-2 border-orange-400"
+                : ""
+            }`}
+          >
+            <Image
+              src="/requirediconsforsidebarandheadercomponent/issuesIcon.svg"
+              alt=""
+              width={22}
+              height={20}
+            />{" "}
+            <div className="ml-1">Issue</div>
+          </button>
+
+          <button
+            onClick={() => handleButtonClick("Task")}
+            className={`flex ${
+              activeButton === "Task"
+                ? "text-orange-400 border-b-2 border-orange-400"
+                : ""
+            }`}
+          >
+            <Image
+              src="/requirediconsforsidebarandheadercomponent/fileTextIcon.svg"
+              alt=""
+              width={22}
+              height={20}
+            />{" "}
+            <div className="ml-1">Task</div>
+          </button>
+
+          <button
+            onClick={() => handleButtonClick("Capture")}
+            className={`flex ${
+              activeButton === "Capture"
+                ? "text-orange-400 border-b-2 border-orange-400"
+                : ""
+            }`}
+          >
+            <Image
+              src="/requirediconsforsidebarandheadercomponent/cameraIcon.svg"
+              alt=""
+              width={22}
+              height={20}
+            />{" "}
+            <div className="ml-1">Capture</div>
+          </button>
+        </div>
+
         <div>
-          <div className="flex justify-between border-b-2">
-            <span className="p-2">Notifications</span>
-            <button className="p-2" onClick={onClose}>
-              <HighlightOffIcon />
-            </button>
-          </div>
-
-          <div className="flex justify-between mt-2 px-2">
-            <button
-              onClick={() => handleButtonClick("All")}
-              className={`flex ${
-                activeButton === "All"
-                  ? "text-orange-400 border-b-2 border-orange-400"
-                  : ""
-              } p-0.5`}
-            >
-              <Image
-                src="/requirediconsforsidebarandheadercomponent/todoIcon.svg"
-                alt=""
-                width={22}
-                height={20}
-              />
-              <div className="ml-1">All</div>
-            </button>
-
-            <button
-              onClick={() => handleButtonClick("Project")}
-              className={`flex ${
-                activeButton === "Project"
-                  ? "text-orange-400 border-b-2 border-orange-400"
-                  : ""
-              }`}
-            >
-              <Image
-                src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
-                alt=""
-                width={22}
-                height={20}
-                className="mt-0.5"
-              />{" "}
-              <div className="ml-1">Project</div>
-            </button>
-
-            <button
-              onClick={() => handleButtonClick("Issue")}
-              className={`flex ${
-                activeButton === "Issue"
-                  ? "text-orange-400 border-b-2 border-orange-400"
-                  : ""
-              }`}
-            >
-              <Image
-                src="/requirediconsforsidebarandheadercomponent/issuesIcon.svg"
-                alt=""
-                width={22}
-                height={20}
-              />{" "}
-              <div className="ml-1">Issue</div>
-            </button>
-
-            <button
-              onClick={() => handleButtonClick("Task")}
-              className={`flex ${
-                activeButton === "Task"
-                  ? "text-orange-400 border-b-2 border-orange-400"
-                  : ""
-              }`}
-            >
-              <Image
-                src="/requirediconsforsidebarandheadercomponent/fileTextIcon.svg"
-                alt=""
-                width={22}
-                height={20}
-              />{" "}
-              <div className="ml-1">Task</div>
-            </button>
-
-            <button
-              onClick={() => handleButtonClick("Capture")}
-              className={`flex ${
-                activeButton === "Capture"
-                  ? "text-orange-400 border-b-2 border-orange-400"
-                  : ""
-              }`}
-            >
-              <Image
-                src="/requirediconsforsidebarandheadercomponent/cameraIcon.svg"
-                alt=""
-                width={22}
-                height={20}
-              />{" "}
-              <div className="ml-1">Capture</div>
-            </button>
-          </div>
-
           <Link href={`/${activeButton}`} passHref>
-            <div className="mt-2">
+            <div onClick = {(e)=>e.preventDefault()} className="mt-2">
               {/* //! -------------------------------- ALL -------------------------------------------- */}
               {activeButton === "All" && (
-                <div className="p-2 bg-slate-200 h-full w-full">
+                <div className="p-2 bg-slate-200 h-full w-full flex-1">
                   {data.map((notification) => (
                     <div
                       key={notification._id}
-                      className="mb-8 border border-b-black p-2 flex flex-row mt-2"
+                      className="mb-8 border border-b-black flex p-2 mt-2"
                     >
-                      <div className="p-2">
+                      <div className="p-1">
                         {notification.category && (
-                          <Image
-                            src={getIconSrc(notification.category)}
-                            alt=""
-                            width={32}
-                            height={20}
-                            className="mt-0.5"
-                          />
+                          <div className="w-6 h-6">
+                            <Image
+                              src={getIconSrc(notification.category)}
+                              alt=""
+                              width={32}
+                              height={20}
+                              className="mt-0.5"
+                            />
+                          </div>
                         )}
                       </div>
-                      <div className="flex flex-col ">
+                      <div className="flex flex-col ml-2">
                         <p className="font-semibold">{notification.message}</p>
                         <p className="font-thin">{notification.createdAt}</p>
                       </div>
                     </div>
                   ))}
-                  {/* Display message when no notifications are found */}
+
+                  {data.length < transformedData.length && (
+                    <button
+                      
+                      className="text-black mt-2 p-1 bg-orange-400 rounded-md ml-4"
+                      onClick={handleLoadMore}
+                    >
+                      Load More
+                    </button>
+                  )}
+
                   {data.length === 0 && (
                     <div className="text-center text-gray-500">
                       Nothing to show
@@ -242,14 +270,16 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                         key={notification._id}
                         className="mb-8 border border-b-black p-2 flex flex-row mt-2"
                       >
-                        <div className="p-2">
-                          <Image
-                            src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
-                            alt=""
-                            width={32}
-                            height={20}
-                            className="mt-0.5"
-                          />
+                        <div className="p-1">
+                          <div className="w-6 h-6">
+                            <Image
+                              src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
+                              alt=""
+                              width={32}
+                              height={20}
+                              className="mt-0.5"
+                            />
+                          </div>
                         </div>
                         <div className="flex flex-col ">
                           <p className="font-semibold">
@@ -259,7 +289,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                         </div>
                       </div>
                     ))}
-                  {/* Display message when no notifications are found */}
+
                   {data.filter(
                     (notification: any) => notification.category === "Project"
                   ).length === 0 && (
@@ -283,19 +313,26 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                         key={notification._id}
                         className="mb-8 border border-b-black p-2 flex flex-row mt-2"
                       >
-                        <div className="p-2">
-                          <Image
-                            src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
-                            alt=""
-                            width={32}
-                            height={20}
-                            className="mt-0.5"
-                          />
+                        <div className="p-1">
+                          <div className="w-6 h-6">
+                            <Image
+                              src="/requirediconsforsidebarandheadercomponent/issuesIcon.svg"
+                              alt=""
+                              width={32}
+                              height={20}
+                              className="mt-0.5"
+                            />
+                          </div>
                         </div>
-                        <p>{notification.message}</p>
+                        <div className="flex flex-col ml-2">
+                          <p className="font-semibold">
+                            {notification.message}
+                          </p>
+                          <p className="font-thin">{notification.createdAt}</p>
+                        </div>
                       </div>
                     ))}
-                  {/* Display message when no notifications are found */}
+
                   {data.filter(
                     (notification: any) => notification.category === "Issue"
                   ).length === 0 && (
@@ -319,19 +356,26 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                         key={notification._id}
                         className="mb-8 border border-b-black p-2 flex flex-row mt-2"
                       >
-                        <div className="p-2">
-                          <Image
-                            src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
-                            alt=""
-                            width={32}
-                            height={20}
-                            className="mt-0.5"
-                          />
+                        <div className="p-1">
+                          <div className="w-6 h-6">
+                            <Image
+                              src="/requirediconsforsidebarandheadercomponent/fileTextIcon.svg"
+                              alt=""
+                              width={32}
+                              height={20}
+                              className="mt-0.5"
+                            />
+                          </div>
                         </div>
-                        <p>{notification.message}</p>
+                        <div className="flex flex-col ml-2">
+                          <p className="font-semibold">
+                            {notification.message}
+                          </p>
+                          <p className="font-thin">{notification.createdAt}</p>
+                        </div>
                       </div>
                     ))}
-                  {/* Display message when no notifications are found */}
+
                   {data.filter(
                     (notification: any) => notification.category === "Task"
                   ).length === 0 && (
@@ -356,7 +400,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                       >
                         <div className="p-2">
                           <Image
-                            src="/requirediconsforsidebarandheadercomponent/clipboardIcon.svg"
+                            src="/requirediconsforsidebarandheadercomponent/cameraIcon.svg"
                             alt=""
                             width={32}
                             height={20}
@@ -366,7 +410,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                         <p>{notification.message}</p>
                       </div>
                     ))}
-                  {/* Display message when no notifications are found */}
+
                   {data.filter(
                     (notification: any) => notification.category === "Capture"
                   ).length === 0 && (
@@ -376,9 +420,6 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
                   )}
                 </div>
               )}
-
-              {/* Add similar conditions for other categories */}
-              {/* ... (similar conditions for other categories) */}
             </div>
           </Link>
         </div>

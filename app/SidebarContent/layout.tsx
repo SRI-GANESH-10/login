@@ -11,7 +11,6 @@ export default function LandingLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RootLayout>
       <section className="flex flex-col h-screen">
         <Nav />
 
@@ -20,11 +19,10 @@ export default function LandingLayout({
             <Sidebar />
           </div>
 
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 p-4">
             <Suspense fallback={<Loading />}>{children}</Suspense>
           </div>
         </div>
       </section>
-    </RootLayout>
   );
 }
