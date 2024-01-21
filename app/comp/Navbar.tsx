@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { deleteCookie } from "../comp/cookie";
 import { useRouter } from "next/navigation";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import Image from "next/image";
 import { Tooltip, Button, Fade } from "@mui/material";
 import DrawerComponent from "./DrawerComponent";
@@ -12,7 +11,7 @@ export default function Nav() {
   const router = useRouter();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
-  const [isDrawerOpen, setDrawerOpen] = useState(false); // State for the drawer
+  const [isDrawerOpen, setDrawerOpen] = useState(false); 
 
   const handleLogout = () => {
     deleteCookie();
@@ -32,7 +31,7 @@ export default function Nav() {
       <nav
         className={`flex items-center justify-between min-h-60 shadow-md ${
           isDrawerOpen ? "drawer-open" : ""
-        } z-50`}
+        }`}
       >
         <ul>
           <li>
@@ -50,16 +49,14 @@ export default function Nav() {
         <ul className="flex space-x-4 items-center mr-6">
           <li>
             <Tooltip
-              title="Uploads in Progress"
-              // TransitionComponent={Fade}
-              // TransitionProps={{ timeout: 1000 }}
-              slotProps={{
-                popper: {
-                  modifiers: [
+              title="Uploads in Progress"                                   //TODO Sets the title to the tool tip coming bottom 
+              slotProps={{                                                  //TODO Allows to pass different additional properties
+                popper: {                                                   //TODO Manages the positioning of the component
+                  modifiers: [                                              //TODO Array which defines various Modifications to tooltip
                     {
-                      name: "offset",
+                      name: "offset",                                       //TODO Which has only offset
                       options: {
-                        offset: [0, 10],
+                        offset: [0, 10],                                    //TODO Horizontal and vertical [px]
                       },
                     },
                   ],
@@ -78,8 +75,6 @@ export default function Nav() {
           <li>
             <Tooltip
               title="My Profile"
-              // TransitionComponent={Fade}
-              // TransitionProps={{ timeout: 1000 }}
               slotProps={{
                 popper: {
                   modifiers: [
@@ -105,8 +100,6 @@ export default function Nav() {
           <li>
             <Tooltip
               title="Support"
-              // TransitionComponent={Fade}
-              // TransitionProps={{ timeout: 1000 }}
               slotProps={{
                 popper: {
                   modifiers: [
@@ -132,8 +125,6 @@ export default function Nav() {
           <li>
             <Tooltip
               title="Notifications"
-              // TransitionComponent={Fade}
-              // TransitionProps={{ timeout: 1000 }}
               slotProps={{
                 popper: {
                   modifiers: [
@@ -165,8 +156,6 @@ export default function Nav() {
           >
             <Tooltip
               title="Menu"
-              // TransitionComponent={Fade}
-              // TransitionProps={{ timeout: 1000 }}
               slotProps={{
                 popper: {
                   modifiers: [
