@@ -37,7 +37,7 @@ export default function Nav() {
           <li>
             <Link href={"/Home"}>
               <Image
-                src="/requirediconsforsidebarandheadercomponent/logo-yellow.svg" // Replace with your image URL
+                src="/requirediconsforsidebarandheadercomponent/logo-yellow.svg" 
                 width={165}
                 height={40}
                 alt="No IMage"

@@ -57,7 +57,7 @@ const Sidebar = () => {
                   width={isLinkActive("dashboard") ? 60 : 25}
                   height={isLinkActive("dashboard") ? 40 : 25}
                   alt="Dashboard Progress"
-                  className={isLinkActive("dashboard") ? " max-w-14" : ""} // Apply ml-4 only when link is active
+                  className={isLinkActive("dashboard") ? " max-w-14" : ""} 
                 />
               </div>
             </Link>

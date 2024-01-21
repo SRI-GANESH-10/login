@@ -27,7 +27,7 @@ interface UserData {
 
 const Users = () => {
   const [userData, setUserData] = useState<UserData[]>([]);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">('asc');
   const router = useRouter();
 
   useEffect(() => {
@@ -39,19 +39,20 @@ const Users = () => {
 
     const fetchData = async () => {
       try {
-        const accessToken = token;
         const response = await axios.get(
           `https://api.dev2.constructn.ai/api/v1/projects/PRJ201897/users`,
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
 
+        
+
         const sortedData = response.data.result.sort((a: any, b: any) => {
-          const dateA = new Date(a.assignedOn).getTime();
-          const dateB = new Date(b.assignedOn).getTime();
+          const dateA = new Date(a.assignedOn).getTime();                       //! Get TimeStamps between the dates start from JAN 1 !970 Unix epoch
+          const dateB = new Date(b.assignedOn).getTime();                        
 
           if (sortOrder === "asc") {
             return dateA - dateB;
@@ -89,7 +90,7 @@ const Users = () => {
     Table: (props) => (
       <Table
         {...props}
-        sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
+        sx={{ borderCollapse: "separate", tableLayout: "fixed" , width:'full' }}
       />
     ),
     TableHead: (props) => (
@@ -170,7 +171,7 @@ const Users = () => {
         </div>
       </div>
 
-      <div className="flex flex-col justify-between mr-1 ml-1 mt-4">
+      <div className="flex flex-col justify-between ml-1 mt-4">
         <div className="w-full">
           <Paper
             style={{
