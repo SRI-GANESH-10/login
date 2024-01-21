@@ -18,7 +18,7 @@ type DrawerProps = {
 const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const [data, setData] = useState<any[]>([]);
-  const [visibleMessages, setVisibleMessages] = useState<number>(5); //TODO Initial number of messages to display
+  const [visibleMessages, setVisibleMessages] = useState<number>(5);                     //TODO Initial number of messages to display
   const [transformedData, setTransformedData] = useState<any[]>([]);
   const router = useRouter();
 
@@ -61,7 +61,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
           })
         );
         setTransformedData(transformedData);
-        const limitedData = transformedData.slice(0, visibleMessages); //TODO Starting and the visibleMessages not including it
+        const limitedData = transformedData.slice(0, visibleMessages);                     //TODO Starting and the visibleMessages not including it
         setData(limitedData);
       } catch (error) {
         console.error("Error fetching data:", error);
