@@ -18,21 +18,18 @@ type DrawerProps = {
 const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
   const [activeButton, setActiveButton] = useState<string | null>(null);
   const [data, setData] = useState<any[]>([]);
-  const [visibleMessages, setVisibleMessages] = useState<number>(5);        //TODO Initial number of messages to display
+  const [visibleMessages, setVisibleMessages] = useState<number>(5); //TODO Initial number of messages to display
   const [transformedData, setTransformedData] = useState<any[]>([]);
-  const router = useRouter()
-
+  const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
-
       const token = getToken();
 
       if (!token) {
         router.push("/Login");
       }
       try {
-        
         const response = await axios.get(
           "https://api.dev2.constructn.ai/api/v1/user-notifications",
           {
@@ -47,12 +44,13 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
             _id: notification._id,
             message: notification.message,
             category: notification.category,
-            createdAt: new Date(notification.createdAt).toLocaleDateString(                //TODO Date converts to Date time format
-                                                                                           //* LocalDateString converts to string based on local
-              "en-US",                                                                     //? In English
+            createdAt: new Date(notification.createdAt).toLocaleDateString(
+              //TODO Date converts to Date time format
+              //* LocalDateString converts to string based on local
+              "en-US", //? In English
               {
                 year: "numeric",
-                month: "2-digit",                                                         //? Atleast Two digits
+                month: "2-digit", //? Atleast Two digits
                 day: "2-digit",
                 hour: "2-digit",
                 minute: "2-digit",
@@ -63,7 +61,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
           })
         );
         setTransformedData(transformedData);
-        const limitedData = transformedData.slice(0, visibleMessages);              //TODO Starting and the visibleMessages not including it
+        const limitedData = transformedData.slice(0, visibleMessages); //TODO Starting and the visibleMessages not including it
         setData(limitedData);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -73,13 +71,14 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
     if (activeButton) {
       fetchData();
     }
-  }, [activeButton, visibleMessages , router]);
+  }, [activeButton, visibleMessages, router]);
 
-  const handleLoadMore = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleLoadMore = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
     e.preventDefault();
     setVisibleMessages((prevVisibleMessages) => prevVisibleMessages + 5);
   };
-  
 
   const handleButtonClick = (buttonName: string) => {
     setActiveButton(buttonName);
@@ -113,7 +112,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
         },
       }}
     >
-      <Box sx={{ width: 446}}>
+      <Box sx={{ width: 446 }}>
         <div className="flex justify-between border-b-2 sticky top-0 bg-white z-10">
           <span className="p-2">Notifications</span>
           <button className="p-2" onClick={onClose}>
@@ -122,6 +121,7 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
         </div>
 
         <div className="flex justify-between px-2 pt-2 pb-1 sticky top-11 bg-white">
+          {/* //! ------------------------------ BUTTON FOR ALL ------------------------------------------------ */}
           <button
             onClick={() => handleButtonClick("All")}
             className={`flex ${
@@ -138,6 +138,8 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
             />
             <div className="ml-1">All</div>
           </button>
+
+          {/* //! ------------------------------ BUTTON FOR PROJECT ------------------------------------------------ */}
 
           <button
             onClick={() => handleButtonClick("Project")}
@@ -157,6 +159,8 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
             <div className="ml-1">Project</div>
           </button>
 
+          {/* //! ------------------------------ BUTTON FOR ISSUE ------------------------------------------------ */}
+
           <button
             onClick={() => handleButtonClick("Issue")}
             className={`flex ${
@@ -174,6 +178,8 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
             <div className="ml-1">Issue</div>
           </button>
 
+          {/* //! ------------------------------ BUTTON FOR TASK ------------------------------------------------ */}
+
           <button
             onClick={() => handleButtonClick("Task")}
             className={`flex ${
@@ -190,6 +196,8 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
             />{" "}
             <div className="ml-1">Task</div>
           </button>
+
+          {/* //! ------------------------------ BUTTON FOR CAPTURE ------------------------------------------------ */}
 
           <button
             onClick={() => handleButtonClick("Capture")}
@@ -210,8 +218,8 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
         </div>
 
         <div>
-          <Link href={`/${activeButton}`} passHref>
-            <div onClick = {(e)=>e.preventDefault()}>
+          <Link href={`/${activeButton}`}>
+            <div onClick={(e) => e.preventDefault()}>
               {/* //! -------------------------------- ALL -------------------------------------------- */}
               {activeButton === "All" && (
                 <div className="p-2 bg-slate-200 h-full w-full flex-1">
@@ -242,7 +250,6 @@ const DrawerComponent: React.FC<DrawerProps> = ({ isOpen, onClose }) => {
 
                   {data.length < transformedData.length && (
                     <button
-                      
                       className="text-black mt-2 p-1 bg-orange-400 rounded-md ml-4"
                       onClick={handleLoadMore}
                     >
