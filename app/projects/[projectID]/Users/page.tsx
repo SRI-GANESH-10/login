@@ -11,8 +11,9 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
-import { getToken } from "../../comp/cookie";
+import { getToken } from "../../../comp/cookie";
 import { useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 
 interface UserData {
   user: {
@@ -29,6 +30,9 @@ const Users = () => {
   const [userData, setUserData] = useState<UserData[]>([]);
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">('asc');
   const router = useRouter();
+  const params = useParams<{ projectID: string }>();
+  console.log(params.projectID)
+
 
   useEffect(() => {
     const token = getToken();
@@ -40,7 +44,7 @@ const Users = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `https://api.dev2.constructn.ai/api/v1/projects/PRJ201897/users`,
+          `https://api.dev2.constructn.ai/api/v1/projects/${params.projectID}/users`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

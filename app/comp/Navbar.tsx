@@ -4,7 +4,7 @@ import Link from "next/link";
 import { deleteCookie } from "../comp/cookie";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { Tooltip, Button, Fade } from "@mui/material";
+import { Tooltip} from "@mui/material";
 import DrawerComponent from "./DrawerComponent";
 
 export default function Nav() {
@@ -29,13 +29,13 @@ export default function Nav() {
   return (
     <main>
       <nav
-        className={`flex items-center justify-between min-h-60 shadow-md ${
+        className={`flex items-center justify-between min-h-[8vh] shadow-md ${
           isDrawerOpen ? "drawer-open" : ""
         }`}
       >
         <ul>
           <li>
-            <Link href={"/Home"}>
+            <Link href={"/projects"}>
               <Image
                 src="/requirediconsforsidebarandheadercomponent/logo-yellow.svg" 
                 width={165}

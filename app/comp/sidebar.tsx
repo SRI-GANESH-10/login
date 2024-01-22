@@ -3,6 +3,8 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Tooltip } from "@mui/material";
+import { useParams } from "next/navigation";
+
 
 type LinkType =
   | "dashboard"
@@ -15,6 +17,8 @@ type LinkType =
 
 const Sidebar = () => {
   const [activeLink, setActiveLink] = useState<LinkType>("dashboard");
+  const params = useParams<{ projectID: string }>();
+
 
   const handleLinkClick = (link: LinkType) => {
     setActiveLink(link);
@@ -43,7 +47,7 @@ const Sidebar = () => {
               },
             }}
           >
-            <Link href={'/SidebarContent/Dashboard'}>
+            <Link href={`/projects/${params.projectID}/Dashboard`}>
               <div
                 onClick={() => handleLinkClick("dashboard")}
                 style={{ cursor: "pointer" }}
@@ -82,7 +86,7 @@ const Sidebar = () => {
               },
             }}
           >
-            <Link href="/SidebarContent/Views">
+            <Link href={`/projects/${params.projectID}/Views`}>
               <div
                 onClick={() => handleLinkClick("schedule")}
                 style={{ cursor: "pointer" }}
@@ -122,7 +126,7 @@ const Sidebar = () => {
               },
             }}
           >
-            <Link href="/SidebarContent/Schedule">
+            <Link href={`/projects/${params.projectID}/Schedule`}>
               <div
                 onClick={() => handleLinkClick("calendar")}
                 style={{ cursor: "pointer" }}
@@ -162,7 +166,7 @@ const Sidebar = () => {
               },
             }}
           >
-            <Link href="/SidebarContent/Users">
+            <Link href={`/projects/${params.projectID}/Users`}>
               <div
                 onClick={() => handleLinkClick("users")}
                 style={{ cursor: "pointer" }}
@@ -203,7 +207,7 @@ const Sidebar = () => {
               },
             }}
           >
-            <Link href="/SidebarContent/ProjectDetails">
+            <Link href={`/projects/${params.projectID}/ProjectDetails`}>
               <div
                 onClick={() => handleLinkClick("details")}
                 style={{ cursor: "pointer" }}
@@ -244,7 +248,7 @@ const Sidebar = () => {
               },
             }}
           >
-            <Link href="/SidebarContent/Uploader">
+            <Link href={`/projects/${params.projectID}/Uploader`}>
               <div
                 onClick={() => handleLinkClick("upload")}
                 style={{ cursor: "pointer" }}
@@ -287,7 +291,7 @@ const Sidebar = () => {
               },
             }}
           >
-            <Link href="/SidebarContent/Chat">
+            <Link href={`/projects/${params.projectID}/Chat`}>
               <div
                 onClick={() => handleLinkClick("newChat")}
                 style={{ cursor: "pointer" }}

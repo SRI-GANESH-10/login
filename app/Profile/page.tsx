@@ -74,10 +74,8 @@ const UserProfile = () => {
           <div className="text-lg">{userData.email}</div>
 
           <div className="text-lg font-semibold">Mobile Number:</div>
-          <div className="text-lg">{userData.contact.number}</div>
+          <div className="text-lg">{userData.contact?.number || 'Not available'}</div>
 
-          <div className="text-lg font-semibold">Gender:</div>
-          <div className="text-lg">{userData.gender}</div>
           {/* Add more fields as needed */}
         </div>
       ) : (

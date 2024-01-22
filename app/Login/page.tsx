@@ -58,7 +58,7 @@ export default function Login() {
 
         if (user && user.result.email === email) {
           console.log("User info:", user);
-          router.push("/Products");
+          router.push("/projects");
         } else {
           setLoginError(true);
         }
