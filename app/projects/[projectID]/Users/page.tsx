@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
 import { TableVirtuoso, TableComponents } from "react-virtuoso";
@@ -13,6 +13,7 @@ import TableRow from "@mui/material/TableRow";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import { getToken } from "../../../comp/cookie";
 import { useRouter } from "next/navigation";
+import * as React from "react";
 import { useParams } from "next/navigation";
 
 interface UserData {
@@ -28,11 +29,36 @@ interface UserData {
 
 const Users = () => {
   const [userData, setUserData] = useState<UserData[]>([]);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">('asc');
+  const [filteredData, setFilteredData] = useState<UserData[]>([]);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const router = useRouter();
   const params = useParams<{ projectID: string }>();
-  console.log(params.projectID)
+  const [searchActive, setSearchActive] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
+  console.log(params.projectID);
+
+  const handleSearchIconClick = () => {
+    setSearchActive(true);
+  };
+
+  const handleSearchClose = () => {
+    setSearchActive(false);
+    setSearchTerm("");
+    setFilteredData([]); // Reset the filtered data when closing the search
+  };
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const term = event.target.value;
+    setSearchTerm(term);
+
+    // Filter the data based on the search term
+    const filtered = userData.filter((user) =>
+      user.user.fullName.toLowerCase().includes(term.toLowerCase())
+    );
+
+    setFilteredData(filtered);
+  };
 
   useEffect(() => {
     const token = getToken();
@@ -52,11 +78,9 @@ const Users = () => {
           }
         );
 
-        
-
         const sortedData = response.data.result.sort((a: any, b: any) => {
-          const dateA = new Date(a.assignedOn).getTime();                       //! Get TimeStamps between the dates start from JAN 1 !970 Unix epoch
-          const dateB = new Date(b.assignedOn).getTime();                        
+          const dateA = new Date(a.assignedOn).getTime();
+          const dateB = new Date(b.assignedOn).getTime();
 
           if (sortOrder === "asc") {
             return dateA - dateB;
@@ -66,6 +90,7 @@ const Users = () => {
         });
 
         setUserData(sortedData);
+        setFilteredData(sortedData); // Initialize filteredData with the entire dataset
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -94,7 +119,7 @@ const Users = () => {
     Table: (props) => (
       <Table
         {...props}
-        sx={{ borderCollapse: "separate", tableLayout: "fixed" , width:'full' }}
+        sx={{ borderCollapse: "separate", tableLayout: "fixed", width: "full" }}
       />
     ),
     TableHead: (props) => (
@@ -132,10 +157,7 @@ const Users = () => {
   const rowContent = (_index: number, user: UserData) => (
     <React.Fragment>
       <TableCell align="left" style={{ width: 200 }}>
-        <div className="flex gap-2">
-          {/* <Image src={user.user.avatar} width={20} height={10} alt="" className="rounded-lg"></Image> */}
-          {user.user.fullName}
-        </div>
+        <div className="flex gap-2">{user.user.fullName}</div>
       </TableCell>
       <TableCell align="left" style={{ width: 200 }}>
         {user.user.email}
@@ -154,20 +176,41 @@ const Users = () => {
       <div className="flex flex-row justify-between w-full">
         <h2 className="text-xl font-semibold text-gray-700">Manage Users</h2>
         <div className="flex flex-row gap-6">
-          <Image
-            src={"/requirediconsforsidebarandheadercomponent/search.svg"}
-            width={25}
-            height={25}
-            alt="Dashboard Progress"
-          />
+          {searchActive ? (
+            <div className="border-2 border-slate-300 rounded-md flex hover:border-blue-500">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="border rounded-md px-2 py-1 focus:border-none focus:outline-none mt-1 border-none"
+                value={searchTerm}
+                onChange={handleSearchChange}
+              />
+              <Image
+                src="/requirediconsforsidebarandheadercomponent/closeWithCircle.svg"
+                width={20}
+                height={15}
+                alt="Search"
+                className="mr-2"
+                onClick={handleSearchClose}
+                style={{ cursor: "pointer" }}
+              />
+            </div>
+          ) : (
+            <Image
+              src="/requirediconsforsidebarandheadercomponent/search.svg"
+              width={25}
+              height={25}
+              alt="Search"
+              onClick={handleSearchIconClick}
+              style={{ cursor: "pointer" }}
+            />
+          )}
 
           <Image
-            src={
-              "/requirediconsforsidebarandheadercomponent/UserFilterIcon.svg"
-            }
+            src="/requirediconsforsidebarandheadercomponent/UserFilterIcon.svg"
             width={25}
             height={25}
-            alt="Dashboard Progress"
+            alt="User Filter"
           />
           <div className="bg-orange-500 text-white px-14 py-2 rounded-md">
             <button>Add User</button>
@@ -184,7 +227,7 @@ const Users = () => {
             }}
           >
             <TableVirtuoso
-              data={userData}
+              data={searchTerm ? filteredData : userData}
               components={VirtuosoTableComponents}
               fixedHeaderContent={fixedHeaderContent}
               itemContent={rowContent}
@@ -197,6 +240,3 @@ const Users = () => {
 };
 
 export default Users;
-
-//! eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJVU1I1NjMxNjIiLCJmaXJzdE5hbWUiOiJHYW5lc2giLCJsYXN0TmFtZSI6IlNhbmt1cmF0cmkiLCJlbWFpbCI6ImdhbmVzaC5zYW5rdXJhdHJpQGNvbnN0cnVjdG4uYWkiLCJzdGF0dXMiOiJhY3RpdmUiLCJpc1N1cHBvcnRVc2VyIjpmYWxzZSwibG9naW5UeXBlIjoiY29uc3RydWN0bi1vYXV0aCIsInZlcmlmaWNhdGlvblRpbWVzdGFtcHMiOlsiMjAyNC0wMS0xOFQwNzowNjowMy4xOTdaIl0sInJlc2V0UGFzc3dvcmRUaW1lc3RhbXBzIjpbXSwidmVyaWZpZWQiOnRydWUsImNyZWF0ZWRBdCI6IjIwMjQtMDEtMThUMDc6MDY6MDMuMTYxWiIsInVwZGF0ZWRBdCI6IjIwMjQtMDEtMTlUMDc6Mjc6NTUuMDc1WiIsIl9fdiI6MSwiZnVsbE5hbWUiOiJHYW5lc2ggU2Fua3VyYXRyaSIsImNhblJlc2VuZFZlcmlmaWNhdGlvbiI6dHJ1ZSwiY2FuUmVzZXRQYXNzd29yZCI6dHJ1ZSwicHJvdmlkZXIiOiJwYXNzd29yZCIsImlhdCI6MTcwNTc1NTkwNywiZXhwIjoxNzA1ODM4NzA3fQ.CGmL6U-K2kqwifJc_iACTg-QPWZSLX5oAcswbtPnn5k
-// !https://api.dev2.constructn.ai/api/v1/projects/PRJ201897/users
